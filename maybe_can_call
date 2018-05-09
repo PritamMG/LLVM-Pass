@@ -11,10 +11,10 @@ fi
 
 basefilename=`echo $1 | cut -d'.' -f1`
 
-llfile=$basefilename.ll
+llfile=$basefilename.bc
 
 $path/clang -O0 -S -emit-llvm $1 -o $llfile
 
-$path/opt -load $buildpath/LLVMSkeleton.so -skeleton $llfile -caller $2 -callee $3
+$path/opt -load $buildpath/LLVMSkeleton.so -skeleton $llfile -caller $2 -callee $3 -o /dev/null
 
 

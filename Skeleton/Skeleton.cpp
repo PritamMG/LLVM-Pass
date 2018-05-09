@@ -85,12 +85,14 @@ bool SkeletonPass::checkForCallerCalleeRel(unsigned int caller, unsigned int cal
 
 	callees = callee_rel[caller];
 
-	already_visited.insert(caller);
-
 	if(callees.empty())
 	{
 		return false;
 	}
+
+//	bool ret = true;
+
+	already_visited.insert(caller);
 
 	for(iter it = callees.begin(); it != callees.end(); it++)
 	{
@@ -98,6 +100,8 @@ bool SkeletonPass::checkForCallerCalleeRel(unsigned int caller, unsigned int cal
 
 		if(*it == callee)
 		{
+//			errs() << "Callee " << *it << " returning true \n";
+
 			return true;
 		}
 		else
@@ -112,7 +116,7 @@ bool SkeletonPass::checkForCallerCalleeRel(unsigned int caller, unsigned int cal
 
 	for(iter cit = new_callers.begin(); cit != new_callers.end(); cit++)
 	{
-		checkForCallerCalleeRel(*cit, callee);
+		return checkForCallerCalleeRel(*cit, callee);
 	}
 
 	return false;
@@ -163,12 +167,12 @@ bool SkeletonPass::checkForCallerCalleeInProgram(StringRef caller, StringRef cal
 //	if(caller_callee_rel[caller_id][callee_id])
 	if(checkForCallerCalleeRel(caller_id, callee_id))
 	{
-		errs() << "Caller " << caller << " -> Callee " << callee << " True\n";
+		errs() << "Caller " << caller << " -> Callee " << callee << " => True\n";
 		return true;
 	}	
 	else 
 	{
-		errs() << "Caller " << caller << " -> Callee " << callee << " False\n";
+		errs() << "Caller " << caller << " -> Callee " << callee << " => False\n";
 		return false;
 	}
 }
@@ -215,6 +219,12 @@ bool SkeletonPass::runOnModule(Module &M) {
 
 	unsigned int caller, callee;
 
+//	if(cg.getExternalCallingNode() != NULL && cg.getExternalCallingNode()->getFunction() != NULL)
+//		errs() << "External Calling Node " << cg.getExternalCallingNode()->getFunction()->getName() << "\n";
+
+//	if(cg.getCallsExternalNode() != NULL)
+//	errs() << "Calls External Node " << cg.getCallsExternalNode()->getFunction()->getName() << "\n";
+
 	for (auto const &cgn : cg)
 	{
 		if (cgn.first != NULL)
@@ -234,7 +244,13 @@ bool SkeletonPass::runOnModule(Module &M) {
 
 			for(; it != cgn.second->end(); it++)
 			{
+				if(it->first == NULL || it->second == NULL)
+					continue;
+
 				temp_node = it->second;
+
+				if(temp_node->getFunction() == NULL)
+					continue;
 
 				callee = rev_map_call_graph_node[temp_node];
 
