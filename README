@@ -10,12 +10,12 @@ For compiling the LLVM pass
 
 For running the LLVM pass on input program
 
-1. Change the variables path and buildpath as follows:
+1. Change the variables path and buildpath in file maybe_can_call as follows:
 
 	path=<path-to-llvm-build>/bin
 	buildpath=<path-to-llvm-build>/lib 
 
-2. chmod 755 maybe_can_call (maybe_can_call is a script file).
+2. chmod 755 maybe_can_call (maybe_can_call is a shell script).
 3. Use the following command
 
 	./maybe_can_call <input-file>.c <caller> <callee>
